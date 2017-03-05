@@ -20,6 +20,7 @@ import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.type.ClassOrInterfaceType;
 import japa.parser.ast.type.PrimitiveType;
 import japa.parser.ast.type.ReferenceType;
+import japa.parser.ast.type.Type;
 
 
 
@@ -53,19 +54,13 @@ public class Main {
 			}
 		}
 		
-		
 		Iterator<File> fileItr = sourceFiles.iterator();
-		
 		
 		HashMap<String, TypeDeclaration> compiledTypesMap = new HashMap<String, TypeDeclaration>();
 		
 		List<ClassGeneration> classOrInterfaceList = new ArrayList<ClassGeneration>();
 		
-		//ClassOrInterfaceDeclaration classOrInterfaceDeclaration = new ClassOrInterfaceDeclaration();
-		
 		List<ClassOrInterfaceType> classOrInterfaceTypes = new ArrayList<ClassOrInterfaceType>();
-		
-		
 	
 		List<TypeDeclaration> listOfTypes = new ArrayList<TypeDeclaration>();
 		
@@ -90,7 +85,7 @@ public class Main {
 			while(typeItr.hasNext())
 			{
 				TypeDeclaration classOrInterfaceElement = typeItr.next();
-				System.out.println("File name is :" + classOrInterfaceElement.getName() + ".java");
+				//System.out.println("File name is :" + classOrInterfaceElement.getName() + ".java");
 				
 				compiledTypesMap.put(classOrInterfaceElement.getName(), classOrInterfaceElement);
 				
@@ -107,15 +102,11 @@ public class Main {
 				
 				List<BodyDeclaration> classBodyDeclarationList = classOrInterfaceElement.getMembers();
 				List<FieldDeclaration> fieldDeclarationList = new ArrayList<FieldDeclaration>();
+				List<MethodDeclaration> methodDeclarationList = new ArrayList<MethodDeclaration>();
+				List<ConstructorDeclaration> constructorDeclarationList = new ArrayList<ConstructorDeclaration>();
 				
 				for(BodyDeclaration elementBody : classBodyDeclarationList)
 				{
-//					if((FieldDeclaration)classBody instanceof FieldDeclaration)
-//					{
-//						System.out.println("File :" + it.next() + ""+ ((FieldDeclaration)classBody).getType());
-//					}
-					
-					
 					System.out.println("Members of this type class is :" +elementBody);
 					
 					if(elementBody instanceof FieldDeclaration)
@@ -127,7 +118,6 @@ public class Main {
 						{
 							System.out.println("The variable data type is: "+ Modifier.toString(((FieldDeclaration)elementBody).getModifiers()));
 							fieldDeclarationList.add(((FieldDeclaration)elementBody));
-							//System.out.println("The variable type is :"+ ((FieldDeclaration)elementBody).getType().toString());
 							generatedClass.setFieldNames(fieldDeclarationList);
 							
 						}
@@ -135,11 +125,13 @@ public class Main {
 					}
 					if(elementBody instanceof MethodDeclaration)
 					{
-						generatedClass.getMethodNames().add((MethodDeclaration)elementBody);
+						methodDeclarationList.add((MethodDeclaration)elementBody);
+						generatedClass.setMethodNames(methodDeclarationList);;
 					}
 					if(elementBody instanceof ConstructorDeclaration)
 					{
-						generatedClass.getConstuctorNames().add((ConstructorDeclaration)elementBody);
+						constructorDeclarationList.add((ConstructorDeclaration)elementBody);
+						generatedClass.setConstuctorNames(constructorDeclarationList);
 					}
 				}
 			}
@@ -154,116 +146,80 @@ public class Main {
 		 * and provide the dependency decision based on whether 'EXTENDS' or 'IMPLEMENTS'
 		 * 
 		 * */
-		for(TypeDeclaration type : listOfTypes)
+		for(File eachFile : sourceFiles)
 		{
-			classOrInterfaceTypes = ((ClassOrInterfaceDeclaration)type).getExtends();
-			
-			if(classOrInterfaceTypes!=null)
+			//File individualJavafile = fileItr.next();
+			compilationUnit = JavaParser.parse(eachFile);
+
+
+			listOfTypes = compilationUnit.getTypes();
+
+			Iterator<TypeDeclaration> typeItr = listOfTypes.iterator();
+			while(typeItr.hasNext())
 			{
-				for(ClassOrInterfaceType classInterfaceType : classOrInterfaceTypes)
-				{
-					ClassGeneration sourceNode = new ClassGeneration();
-					//classInterfaceType
+				TypeDeclaration typeDeclarationElement = typeItr.next();
+					List<ClassOrInterfaceType> implementsList = ((ClassOrInterfaceDeclaration)typeDeclarationElement).getImplements();
+
+					if(implementsList!=null)
+					{
+						for(ClassOrInterfaceType currentImplementingClass : implementsList)
+						{
+							String source = typeDeclarationElement.getName();
+							ClassGeneration sourceNode = plantUMLFigure.getClassGeneration(source);
+							String destination = currentImplementingClass.getName();
+							ClassGeneration destinationNode = new ClassGeneration(destination);
+
+							NodesConnection nodeConnection = new NodesConnection();
+							nodeConnection.setSourceNode(sourceNode);
+							nodeConnection.setDestinationNode(destinationNode);
+							nodeConnection.setConnectingLine(ConnectingLines.getImplements());
+							plantUMLFigure.getConnectedLineswithNodes().add(nodeConnection);
+						}
+					}
+					
+					List<ClassOrInterfaceType> extendsList = ((ClassOrInterfaceDeclaration)typeDeclarationElement).getExtends();
+					if(extendsList!=null)
+					{
+						for(ClassOrInterfaceType currentExtendingClass : extendsList)
+						{
+							String source = typeDeclarationElement.getName();
+							ClassGeneration sourceNode = plantUMLFigure.getClassGeneration(source);
+							String destination = currentExtendingClass.getName();
+							ClassGeneration destinationNode = new ClassGeneration(destination);
+
+							NodesConnection nodeConnection = new NodesConnection();
+							nodeConnection.setSourceNode(sourceNode);
+							nodeConnection.setDestinationNode(destinationNode);
+							nodeConnection.setConnectingLine(ConnectingLines.getExtends());
+							plantUMLFigure.getConnectedLineswithNodes().add(nodeConnection);
+						}	
+					}
+					
 				}
-			}
-		}
+
+			} 
+
 		
 		/*
-		 * Draw dependencies between classes based on the 
+		 * Below code snippet draws dependencies between classes based on the 
 		 * attribute types and composition types after fetching the TypeDeclaration from 
 		 * the HashMap where we saved them
 		 * */
 		
-		Iterator<Entry<String, TypeDeclaration>> typeDeclarationItr = compiledTypesMap.entrySet().iterator();
-		while(typeDeclarationItr.hasNext())
-		{
-			Map.Entry<String, TypeDeclaration> typeDeclarationEntry = (Map.Entry<String, TypeDeclaration>)typeDeclarationItr.next();
-			
-			System.out.println("Type Declaration element is :" + typeDeclarationEntry.getValue());	
-			
-			TypeDeclaration typeDeclarationElement = typeDeclarationEntry.getValue();
-			
-			if(!((ClassOrInterfaceDeclaration)typeDeclarationElement).isInterface())
-			{
-				List<BodyDeclaration> bodyDeclarations = typeDeclarationElement.getMembers();
-				
-				for(BodyDeclaration currentBodyDeclaration : bodyDeclarations)
-				{
-					if(currentBodyDeclaration instanceof FieldDeclaration)
-					{
-						if(getReferenceTypeFlag(currentBodyDeclaration))
-						{
-							/*if(plantUMLFigure.getConnectedLineswithNodes().size()!=0)
-							{
-								for(NodesConnection node : plantUMLFigure.getConnectedLineswithNodes())
-								{
-									if(typeDeclarationElement.getName().equals(node.getSourceNode()) || typeDeclarationElement.getName().equals(node.getDestinationNode()))
-									{
-										break;
-									}
-									else
-									{
-										continue;
-									}
-								}
-							}
-							else
-							{
-								String destinationClassFullDesc = ((FieldDeclaration)currentBodyDeclaration).getType().toString();
-								String destinationClassName = new String(((FieldDeclaration)currentBodyDeclaration).getVariables().get(0).toString().toUpperCase());
-								String sourceNodeName = typeDeclarationElement.getName();
-								ClassGeneration sourceNode = plantUMLFigure.getClassGeneration(sourceNodeName);
-								ClassGeneration destinationNode = new ClassGeneration(destinationClassName); 
-								NodesConnection nodeConnection = new NodesConnection();
-								nodeConnection.setSourceNode(sourceNode);
-								nodeConnection.setDestinationNode(destinationNode);
-								nodeConnection.setConnectingLine(ConnectingLines.getAssociation());
-								
-								
-								if(destinationClassFullDesc.contains("Collection"))
-								{
-									nodeConnection.setMultiplicityLevel(PlantUMLNotations.getOnetomanymultiplicity());
-								}
-								plantUMLFigure.getConnectedLineswithNodes().add(nodeConnection);
-							}*/
-							
-							
-									String destinationClassFullDesc = new String(((FieldDeclaration)currentBodyDeclaration).getType().toString());
-									String destinationClassName = new String(((FieldDeclaration)currentBodyDeclaration).getVariables().get(0).toString().toUpperCase());
-									String sourceNodeName = typeDeclarationElement.getName();
-									ClassGeneration sourceNode = plantUMLFigure.getClassGeneration(sourceNodeName);
-									ClassGeneration destinationNode = new ClassGeneration(destinationClassName); 
-									NodesConnection nodeConnection = new NodesConnection();
-									nodeConnection.setSourceNode(sourceNode);
-									nodeConnection.setDestinationNode(destinationNode);
-									nodeConnection.setConnectingLine(ConnectingLines.getAssociation());
-									
-									
-									if(destinationClassFullDesc.contains("Collection"))
-									{
-										nodeConnection.setMultiplicityLevel(PlantUMLNotations.getOnetomanymultiplicity());
-									}
-									plantUMLFigure.getConnectedLineswithNodes().add(nodeConnection);
-							//ClassGeneration destinationNode = new ClassGeneration();
-						}
-					}
-				}
-			}
-			
+		plantUMLFigure = new DependencyDrawer().drawDependeny(plantUMLFigure, compiledTypesMap);
 		
-		}
 		new UMLStringOutput().generatePlantUMLTemplateFile(plantUMLFigure, sourceFlder, outputImageFileName);
 		
 	}
 	
-	public static boolean getReferenceTypeFlag(BodyDeclaration currentBodyDeclaration)
+	public static boolean getReferenceTypeFlag(Type passedType)
 	{
-		if(((FieldDeclaration)currentBodyDeclaration).getType() instanceof ReferenceType)
+		if(passedType instanceof ReferenceType)
 		{
-			if(!(((FieldDeclaration)currentBodyDeclaration).getType().toString().equals("String")))
+			if(!(passedType.toString().equals("String")))
 			{
-				if(!(((FieldDeclaration)currentBodyDeclaration).getType().toString().equals("String[]")) &&
-						!(((FieldDeclaration)currentBodyDeclaration).getType().toString().equals("int[]")))
+				if(!(passedType.toString().equals("String[]")) &&
+						!(passedType.toString().equals("int[]")))
 				{
 					return true;
 				}

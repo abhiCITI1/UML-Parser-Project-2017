@@ -1,9 +1,18 @@
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.print.DocFlavor.STRING;
+import javax.swing.text.FieldView;
+
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.body.FieldDeclaration;
+import japa.parser.ast.body.MethodDeclaration;
+import japa.parser.ast.body.VariableDeclarator;
+import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.type.ClassOrInterfaceType;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
@@ -24,9 +33,7 @@ public class UMLStringOutput {
 	UMLClassMethodsBuilder umlClassMethodsBuilder = new UMLClassMethodsBuilder();
 	UMLClassConnectionLineBuilder umlClassConnectionLineBuilder = new UMLClassConnectionLineBuilder();
 	
-	private String  finalPlantUMLTemplate = "@startuml\n";
-	
-	
+	private String  finalPlantUMLTemplate = "";
 	
 	/**
 	 * @param plantUMLFigure
@@ -41,51 +48,72 @@ public class UMLStringOutput {
 		String umlVariables = "";
 		//Fetching the generated class list from the Plant UML Figure
 		List<ClassGeneration> generatedClassList =  plantUMLFigure.getGeneratedClass();
+		boolean fieldAvailable = false;
+		List<MethodDeclaration> getterSetterMethodList =  new ArrayList<MethodDeclaration>();
 		
 		for(ClassGeneration generatedClass : generatedClassList)
 		{
+			if(!generatedClass.isInterfaceFlag())
+			{
+				umlVariables = umlVariables + "class "+ generatedClass.getClassName() + "{\n";
+			}
+			else
+			{
+				umlVariables = umlVariables + "interface "+ generatedClass.getClassName() + "<<interface>>" + "{\n";
+			}
 			if(generatedClass.getFieldNames() !=null)
 			{
-				//Class className  = generatedClass.getClass();
-				
-				if(!generatedClass.isInterfaceFlag())
-				{
-					umlVariables = umlVariables + "Class "+ generatedClass.getClassName() + "{\n";
-					umlVariables = umlVariables + umlClassAttributesBuilder.getUMLClassAttributes(generatedClass.getFieldNames());
-					umlVariables = umlVariables+"\n";
-				}
-				else
-				{
-					umlVariables = umlVariables + "Interface "+ generatedClass.getClassName() + "{\n";
-					umlVariables = umlVariables + umlClassAttributesBuilder.getUMLClassAttributes(generatedClass.getFieldNames());
-					umlVariables = umlVariables+"\n";
-				}
-				
-				//System.out.println("class name is :" + className.getName() + "" + className.isInterface());
-				//if(!className.isInterface())
-				//{
-					
-				//}
-				
+				fieldAvailable = true;
+				umlVariables = umlVariables + umlClassAttributesBuilder.getUMLClassAttributes(generatedClass.getFieldNames());
+				umlVariables = umlVariables+"\n";
 			}
-//			if(generatedClass.getMethodNames() !=null)
-//			{
-//				umlClassMethodsBuilder.setPlantUMLBodyOfMethods(generatedClass.getMethodNames());
-//			}
+			if(generatedClass.getMethodNames() !=null)
+			{
+				/*
+				 * Below code block is to convert the private variable based
+				 * on its public setter and getter method
+				 * */
+				List<MethodDeclaration> methodList = generatedClass.getMethodNames();
+				if(fieldAvailable)
+				{
+					for(MethodDeclaration currentMethod : methodList)
+					{
+						for(FieldDeclaration eachField : generatedClass.getFieldNames())
+						{
+							String fieldSetterMethod = "set" + eachField.getVariables().get(0).toString();
+							String fieldGetterMethod = "get" + eachField.getVariables().get(0).toString();
+							
+							if(currentMethod.getName().equalsIgnoreCase(fieldGetterMethod) || currentMethod.getName().equalsIgnoreCase(fieldSetterMethod))
+							{
+								getterSetterMethodList.add(currentMethod);
+								//System.out.println(Modifier.toString(1));
+								eachField.setModifiers(1);
+							}
+							
+						}
+					}
+					for(MethodDeclaration getterSetterMethod : getterSetterMethodList)
+					{
+						methodList.remove(getterSetterMethod);
+					}
+				}
+				
+				
+				
+				umlVariables = umlVariables + umlClassMethodsBuilder.getUMLClassMethods(generatedClass.getMethodNames());
+			}
+			umlVariables += "}\n";
 		}
-		umlVariables += "}\n";
-		
+			
 		List<NodesConnection> connectedNodesDesc = plantUMLFigure.getConnectedLineswithNodes();
 		
 		if(connectedNodesDesc !=null && connectedNodesDesc.size()!=0)
 		{
 			umlVariables = umlVariables + umlClassConnectionLineBuilder.getConnectedLinesDesc(connectedNodesDesc);
-			umlVariables = umlVariables + "\n";
 		}
 		
 		
 		finalPlantUMLTemplate = "@startuml\n" + umlVariables + "\n@enduml";
-		//finalPlantUMLTemplate = "";
 		
 		SourceStringReader sourceReader = new SourceStringReader(finalPlantUMLTemplate);
 		

@@ -12,6 +12,13 @@
 public class PlantUMLNotations {
 
 	/**
+	 * @return the dependency
+	 */
+	public static String getDependency() {
+		return DEPENDENCY;
+	}
+
+	/**
 	 * @return the one to many multiplicity
 	 */
 	public static String getOnetomanymultiplicity() {
@@ -45,6 +52,7 @@ public class PlantUMLNotations {
 	private static final String ONETOMANYMULTIPLICITY = "*";
 	private static final String MANYTOMANYMULTIPLICITY = "*--";
 	private static final String ASSOCIATION = "--";
+	private static final String DEPENDENCY = "<..";
 	private static final String EXTENDS = "<|--";
 	private static final String IMPLEMENTS = "<|..";
 	
