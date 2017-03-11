@@ -18,13 +18,9 @@ import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.SourceStringReader;
 
-/**
- * 
- */
 
 /**
  * @author Abhishek
- *
  */
 public class UMLStringOutput {
 	

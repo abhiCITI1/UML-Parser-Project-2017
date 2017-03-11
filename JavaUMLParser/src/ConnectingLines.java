@@ -4,7 +4,6 @@
 
 /**
  * @author Abhishek
- *
  */
 public class ConnectingLines {
 	

@@ -5,7 +5,9 @@ import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.type.ClassOrInterfaceType;
 import japa.parser.ast.type.ReferenceType;
 
-
+/**
+ * @author Abhishek
+ **/
 public class UMLClassAttributesBuilder {
 	
 	public String getUMLClassAttributes(List<FieldDeclaration> declaredFields)

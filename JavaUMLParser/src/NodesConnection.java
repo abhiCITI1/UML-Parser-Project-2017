@@ -1,10 +1,5 @@
 /**
- * 
- */
-
-/**
  * @author Abhishek
- *
  */
 public class NodesConnection {
 	

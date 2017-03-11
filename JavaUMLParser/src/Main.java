@@ -27,7 +27,6 @@ import japa.parser.ast.type.Type;
 /**
  * This is the main java parser class which takes the java source codes dynamically
  * and convert them to a UML image
- * 
  * */
 public class Main {
 

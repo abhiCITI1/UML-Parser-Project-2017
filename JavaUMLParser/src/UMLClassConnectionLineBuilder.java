@@ -1,12 +1,7 @@
 import java.util.List;
 
 /**
- * 
- */
-
-/**
  * @author Abhishek
- *
  */
 public class UMLClassConnectionLineBuilder {
 	

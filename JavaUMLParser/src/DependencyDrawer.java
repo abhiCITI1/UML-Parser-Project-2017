@@ -20,7 +20,6 @@ import japa.parser.ast.type.ReferenceType;
 
 /**
  * @author Abhishek
- *
  */
 public class DependencyDrawer {
 	

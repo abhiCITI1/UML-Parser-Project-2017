@@ -7,13 +7,9 @@ import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.type.ReferenceType;
 
-/**
- * 
- */
 
 /**
  * @author Abhishek
- *
  */
 public class UMLClassMethodsBuilder {
 	

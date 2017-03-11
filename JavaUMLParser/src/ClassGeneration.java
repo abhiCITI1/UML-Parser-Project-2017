@@ -6,7 +6,6 @@ import japa.parser.ast.body.MethodDeclaration;
 
 /**
  * @author Abhishek
- *
  */
 public class ClassGeneration {
 	

@@ -1,16 +1,12 @@
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 
- */
 
 /**
  * @author Abhishek
  *
  *This is the class which has the complete class or interface figures
  *with respective class names and the association/dependency between them
- *
  */
 public class PlantUMLFigure {
 	
