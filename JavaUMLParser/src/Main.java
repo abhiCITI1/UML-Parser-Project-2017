@@ -139,8 +139,6 @@ public class Main {
 			
 		}
 		plantUMLFigure.setGeneratedClass(classOrInterfaceList);
-		
-		
 		/*
 		 * This block of code fetches the type definition(Class/Interface) of the template
 		 * and provide the dependency decision based on whether 'EXTENDS' or 'IMPLEMENTS'
@@ -198,8 +196,6 @@ public class Main {
 				}
 
 			} 
-
-		
 		/*
 		 * Below code snippet draws dependencies between classes based on the 
 		 * attribute types and composition types after fetching the TypeDeclaration from 
