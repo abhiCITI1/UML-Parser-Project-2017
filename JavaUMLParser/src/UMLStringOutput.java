@@ -9,8 +9,10 @@ import javax.print.DocFlavor.STRING;
 import javax.swing.text.FieldView;
 
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.body.ConstructorDeclaration;
 import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
+import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.type.ClassOrInterfaceType;
@@ -46,6 +48,38 @@ public class UMLStringOutput {
 		List<ClassGeneration> generatedClassList =  plantUMLFigure.getGeneratedClass();
 		boolean fieldAvailable = false;
 		List<MethodDeclaration> getterSetterMethodList =  new ArrayList<MethodDeclaration>();
+		
+		//List<ConstructorDeclaration>constructorList = plantUMLFigure.getGeneratedClass();
+		
+		for(ClassGeneration generatedClass : generatedClassList)
+		{
+			List<ConstructorDeclaration>constructorList = generatedClass.getConstuctorNames();
+			for (ConstructorDeclaration constructor : constructorList) 
+			{
+				List<Parameter>parameters = constructor.getParameters();
+				if(parameters!= null)
+				{	
+					for (Parameter parameter : parameters) 
+					{
+						if(parameter.getType()!=null)
+						{
+							umlVariables += "+"+constructor.getName()+"("+
+									parameter.getId().toString()+" : "+parameter.getType()+")\n";
+						}
+					}
+				}
+				else
+				{
+					umlVariables += "+"+constructor.getName()+"()\n";
+
+				}
+			}
+			
+		}
+		
+		
+		
+		
 		
 		for(ClassGeneration generatedClass : generatedClassList)
 		{
