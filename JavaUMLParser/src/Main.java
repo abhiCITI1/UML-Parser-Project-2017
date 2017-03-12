@@ -59,7 +59,7 @@ public class Main {
 		
 		List<ClassGeneration> classOrInterfaceList = new ArrayList<ClassGeneration>();
 		
-		List<ClassOrInterfaceType> classOrInterfaceTypes = new ArrayList<ClassOrInterfaceType>();
+		//List<ClassOrInterfaceType> classOrInterfaceTypes = new ArrayList<ClassOrInterfaceType>();
 	
 		List<TypeDeclaration> listOfTypes = new ArrayList<TypeDeclaration>();
 		
