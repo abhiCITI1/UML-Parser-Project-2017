@@ -32,19 +32,19 @@ public class Main {
 
 	public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException {
 		// TODO Auto-generated method stub
-		
+
 		String sourceFlder = args[1];
 		String outputImageFileName = args[2];
-		
+
 		CompilationUnit compilationUnit = new CompilationUnit();
-		
+
 		File fileFolder = new File(sourceFlder);
-		
-		
+
+
 		ArrayList<File> sourceFiles = new ArrayList<File>();
-		
+
 		File[] fileListInFolder = fileFolder.listFiles();
-		
+
 		for(File file : fileListInFolder )
 		{
 			if(file.isFile() && file.getName().endsWith(".java"))
@@ -52,42 +52,42 @@ public class Main {
 				sourceFiles.add(file);
 			}
 		}
-		
+
 		Iterator<File> fileItr = sourceFiles.iterator();
-		
+
 		HashMap<String, TypeDeclaration> compiledTypesMap = new HashMap<String, TypeDeclaration>();
-		
+
 		List<ClassGeneration> classOrInterfaceList = new ArrayList<ClassGeneration>();
-		
+
 		//List<ClassOrInterfaceType> classOrInterfaceTypes = new ArrayList<ClassOrInterfaceType>();
-	
+
 		List<TypeDeclaration> listOfTypes = new ArrayList<TypeDeclaration>();
-		
+
 		PlantUMLFigure plantUMLFigure = new PlantUMLFigure();
-	
-		
+
+
 		/*
 		 * This block of code iteratively fetches the return type, access modifier, name of 
-		 * attributes present in the loaded .Java classes and store them in a list of Class Types 
+		 * attributes present in the loaded .Java class files and store them in a list of Class Types 
 		 * to be used later for conditional checking
 		 * */
 		while(fileItr.hasNext())
 		{
 			File individualJavafile = fileItr.next();
 			compilationUnit = JavaParser.parse(individualJavafile);
-			
-			
+
+
 			listOfTypes = compilationUnit.getTypes();
-			
+
 			Iterator<TypeDeclaration> typeItr = listOfTypes.iterator();
 			ClassGeneration generatedClass = new ClassGeneration();
 			while(typeItr.hasNext())
 			{
 				TypeDeclaration classOrInterfaceElement = typeItr.next();
 				//System.out.println("File name is :" + classOrInterfaceElement.getName() + ".java");
-				
+
 				compiledTypesMap.put(classOrInterfaceElement.getName(), classOrInterfaceElement);
-				
+
 				if(((ClassOrInterfaceDeclaration)classOrInterfaceElement).isInterface())
 				{
 					generatedClass.setInterfaceFlag(true);
@@ -96,31 +96,27 @@ public class Main {
 				{
 					generatedClass.setInterfaceFlag(false);
 				}
-				
+
 				generatedClass.setClassName(classOrInterfaceElement.getName());
-				
+
 				List<BodyDeclaration> classBodyDeclarationList = classOrInterfaceElement.getMembers();
 				List<FieldDeclaration> fieldDeclarationList = new ArrayList<FieldDeclaration>();
 				List<MethodDeclaration> methodDeclarationList = new ArrayList<MethodDeclaration>();
 				List<ConstructorDeclaration> constructorDeclarationList = new ArrayList<ConstructorDeclaration>();
-				
+
 				for(BodyDeclaration elementBody : classBodyDeclarationList)
 				{
 					System.out.println("Members of this type class is :" +elementBody);
-					
+
 					if(elementBody instanceof FieldDeclaration)
 					{
-						if(((FieldDeclaration)elementBody).getType() instanceof PrimitiveType || 
-								((FieldDeclaration)elementBody).getType().toString().equals("String") ||
-								((FieldDeclaration)elementBody).getType().toString().equals("int[]") ||
-								((FieldDeclaration)elementBody).getType().toString().equals("String[]"))
+						if(getPrimitiveTypeFlag(((FieldDeclaration)elementBody).getType()))
 						{
 							System.out.println("The variable data type is: "+ Modifier.toString(((FieldDeclaration)elementBody).getModifiers()));
 							fieldDeclarationList.add(((FieldDeclaration)elementBody));
 							generatedClass.setFieldNames(fieldDeclarationList);
-							
 						}
-						
+
 					}
 					if(elementBody instanceof MethodDeclaration)
 					{
@@ -135,7 +131,7 @@ public class Main {
 				}
 			}
 			classOrInterfaceList.add(generatedClass);
-			
+
 		}
 		plantUMLFigure.setGeneratedClass(classOrInterfaceList);
 		/*
@@ -155,58 +151,58 @@ public class Main {
 			while(typeItr.hasNext())
 			{
 				TypeDeclaration typeDeclarationElement = typeItr.next();
-					List<ClassOrInterfaceType> implementsList = ((ClassOrInterfaceDeclaration)typeDeclarationElement).getImplements();
+				List<ClassOrInterfaceType> implementsList = ((ClassOrInterfaceDeclaration)typeDeclarationElement).getImplements();
 
-					if(implementsList!=null)
+				if(implementsList!=null)
+				{
+					for(ClassOrInterfaceType currentImplementingClass : implementsList)
 					{
-						for(ClassOrInterfaceType currentImplementingClass : implementsList)
-						{
-							String source = typeDeclarationElement.getName();
-							ClassGeneration sourceNode = plantUMLFigure.getClassGeneration(source);
-							String destination = currentImplementingClass.getName();
-							ClassGeneration destinationNode = new ClassGeneration(destination);
+						String source = typeDeclarationElement.getName();
+						ClassGeneration sourceNode = plantUMLFigure.getClassGeneration(source);
+						String destination = currentImplementingClass.getName();
+						ClassGeneration destinationNode = new ClassGeneration(destination);
 
-							NodesConnection nodeConnection = new NodesConnection();
-							nodeConnection.setSourceNode(sourceNode);
-							nodeConnection.setDestinationNode(destinationNode);
-							nodeConnection.setConnectingLine(ConnectingLines.getImplements());
-							plantUMLFigure.getConnectedLineswithNodes().add(nodeConnection);
-						}
+						NodesConnection nodeConnection = new NodesConnection();
+						nodeConnection.setSourceNode(sourceNode);
+						nodeConnection.setDestinationNode(destinationNode);
+						nodeConnection.setConnectingLine(ConnectingLines.getImplements());
+						plantUMLFigure.getConnectedLineswithNodes().add(nodeConnection);
 					}
-					
-					List<ClassOrInterfaceType> extendsList = ((ClassOrInterfaceDeclaration)typeDeclarationElement).getExtends();
-					if(extendsList!=null)
-					{
-						for(ClassOrInterfaceType currentExtendingClass : extendsList)
-						{
-							String source = typeDeclarationElement.getName();
-							ClassGeneration sourceNode = plantUMLFigure.getClassGeneration(source);
-							String destination = currentExtendingClass.getName();
-							ClassGeneration destinationNode = new ClassGeneration(destination);
-
-							NodesConnection nodeConnection = new NodesConnection();
-							nodeConnection.setSourceNode(sourceNode);
-							nodeConnection.setDestinationNode(destinationNode);
-							nodeConnection.setConnectingLine(ConnectingLines.getExtends());
-							plantUMLFigure.getConnectedLineswithNodes().add(nodeConnection);
-						}	
-					}
-					
 				}
 
-			} 
+				List<ClassOrInterfaceType> extendsList = ((ClassOrInterfaceDeclaration)typeDeclarationElement).getExtends();
+				if(extendsList!=null)
+				{
+					for(ClassOrInterfaceType currentExtendingClass : extendsList)
+					{
+						String source = typeDeclarationElement.getName();
+						ClassGeneration sourceNode = plantUMLFigure.getClassGeneration(source);
+						String destination = currentExtendingClass.getName();
+						ClassGeneration destinationNode = new ClassGeneration(destination);
+
+						NodesConnection nodeConnection = new NodesConnection();
+						nodeConnection.setSourceNode(sourceNode);
+						nodeConnection.setDestinationNode(destinationNode);
+						nodeConnection.setConnectingLine(ConnectingLines.getExtends());
+						plantUMLFigure.getConnectedLineswithNodes().add(nodeConnection);
+					}	
+				}
+
+			}
+
+		} 
 		/*
 		 * Below code snippet draws dependencies between classes based on the 
 		 * attribute types and composition types after fetching the TypeDeclaration from 
 		 * the HashMap where we saved them
-		 * */
-		
+		 **/
+
 		plantUMLFigure = new DependencyDrawer().drawDependeny(plantUMLFigure, compiledTypesMap);
-		
+
 		new UMLStringOutput().generatePlantUMLTemplateFile(plantUMLFigure, sourceFlder, outputImageFileName);
-		
+
 	}
-	
+
 	public static boolean getReferenceTypeFlag(Type passedType)
 	{
 		if(passedType instanceof ReferenceType)
@@ -223,4 +219,16 @@ public class Main {
 		return false;
 	}
 
+	public static boolean getPrimitiveTypeFlag(Type passedType)
+	{
+		if(passedType instanceof PrimitiveType || passedType.toString().equals("String") || 
+				passedType.toString().equals("int[]") || passedType.toString().equals("String[]"))
+		{
+			return true;
+		}
+		else{
+			return false;
+		}
+
+	}
 }
