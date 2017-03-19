@@ -17,6 +17,7 @@ public class PlantUMLClassFinalTemplateBuilder {
 	
 	private String umlVariables = "" ;
 	UMLClassAttributesBuilder umlClassAttributesBuilder = new UMLClassAttributesBuilder();
+	UMLClassConstructorBuilder umlClassConstructorBuilder = new UMLClassConstructorBuilder();
 	private List<MethodDeclaration> getterSetterMethodList =  new ArrayList<MethodDeclaration>();
 	UMLClassMethodsBuilder umlClassMethodsBuilder = new UMLClassMethodsBuilder();
 	
@@ -42,11 +43,9 @@ public class PlantUMLClassFinalTemplateBuilder {
 			
 			if(generatedClass.getConstuctorNames()!=null)
 			{
-				List<ConstructorDeclaration> constructorList = generatedClass.getConstuctorNames();
-				for(ConstructorDeclaration eachConstructor : constructorList)
-				{
-					System.out.println(eachConstructor);
-				}
+				umlVariables = umlVariables + umlClassConstructorBuilder.getUMLClassConstructor(generatedClass.getConstuctorNames());
+				umlVariables = umlVariables+"\n";
+			
 			}
 			
 			if(generatedClass.getMethodNames() !=null)
@@ -79,6 +78,7 @@ public class PlantUMLClassFinalTemplateBuilder {
 						methodList.remove(getterSetterMethod);
 					}
 				}
+				fieldAvailable = false;
 				umlVariables = umlVariables + umlClassMethodsBuilder.getUMLClassMethods(generatedClass.getMethodNames());
 			}
 			

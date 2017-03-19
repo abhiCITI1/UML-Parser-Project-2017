@@ -41,42 +41,14 @@ public class UMLStringOutput {
 		boolean fieldAvailable = false;
 		List<MethodDeclaration> getterSetterMethodList =  new ArrayList<MethodDeclaration>();
 		
-		//List<ConstructorDeclaration>constructorList = plantUMLFigure.getGeneratedClass();
-		
-		for(ClassGeneration generatedClass : generatedClassList)
-		{
-			List<ConstructorDeclaration>constructorList = generatedClass.getConstuctorNames();
-			for (ConstructorDeclaration constructor : constructorList) 
-			{
-				List<Parameter>parameters = constructor.getParameters();
-				if(parameters!= null)
-				{	
-					for (Parameter parameter : parameters) 
-					{
-						if(parameter.getType()!=null)
-						{
-							umlVariables += "+"+constructor.getName()+"("+
-									parameter.getId().toString()+" : "+parameter.getType()+")\n";
-						}
-					}
-				}
-				else
-				{
-					umlVariables += "+"+constructor.getName()+"()\n";
-
-				}
-			}
-			
-		}
-		
 		
 		/** 
 		 * This method invocation is to build the parsed plantUML input based on the class type or interface type and 
 		 * to convert the private variable having public setter and getter methods into a public variable and removing those setter getter
-		 * methods from the method list 
+		 * methods from the method list, creating string input based on parsed fieldVariables, methods, constructors for planUML 
 		 */
 		
-		umlVariables = new UMLClassGetterSetterBuilder().getSetterGetterBuilt(generatedClassList,fieldAvailable);
+		umlVariables = new PlantUMLClassFinalTemplateBuilder().buildPlantUMLClassFinalTemplate(generatedClassList,fieldAvailable);
 		
 			
 		List<NodesConnection> connectedNodesDesc = plantUMLFigure.getConnectedLineswithNodes();
