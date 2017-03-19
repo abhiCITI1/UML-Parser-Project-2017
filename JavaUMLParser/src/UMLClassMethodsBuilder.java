@@ -20,7 +20,7 @@ public class UMLClassMethodsBuilder {
 		for(MethodDeclaration currentMethod : declaredMethods)
 		{
 
-			if(Modifier.toString(currentMethod.getModifiers()).equals("public"))
+			if(Modifier.toString(currentMethod.getModifiers()).equals("public") || Modifier.toString(currentMethod.getModifiers()).equals("public abstract"))
 			{
 				List<Parameter> parameterList = currentMethod.getParameters();
 				if(parameterList !=null)
@@ -45,11 +45,11 @@ public class UMLClassMethodsBuilder {
 				{
 					if(currentMethod.getType().toString().equals("void"))
 					{
-							umlVariables = umlVariables + "+" + currentMethod.getName() + "()\n";
+							umlVariables = umlVariables + "+" + currentMethod.getName() + "()" + " : " + currentMethod.getType().toString() +"\n";
 					}
 					else
 					{
-							umlVariables = umlVariables + "+" + currentMethod.getName() + "()" + ":" + currentMethod.getType().toString() + "\n";                       
+							umlVariables = umlVariables + "+" + currentMethod.getName() + "()" + " : " + currentMethod.getType().toString() + "\n";                       
 					}
 				}
 				
