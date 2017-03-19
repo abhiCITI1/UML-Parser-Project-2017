@@ -11,8 +11,10 @@ import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
+import japa.parser.ast.type.ClassOrInterfaceType;
 import japa.parser.ast.type.PrimitiveType;
 import japa.parser.ast.type.ReferenceType;
+import japa.parser.ast.type.Type;
 
 /**
  * 
@@ -48,16 +50,45 @@ public class DependencyDrawer {
 						if(Main.getReferenceTypeFlag(((FieldDeclaration)currentBodyDeclaration).getType()))
 						{
 							String destinationClassFullDesc = new String(((FieldDeclaration)currentBodyDeclaration).getType().toString());
-							String destinationClassName = new String(((FieldDeclaration)currentBodyDeclaration).getVariables().get(0).toString().toUpperCase());
+							
+							Type destinationFieldDEclaration = ((FieldDeclaration)currentBodyDeclaration).getType();
+							
+							String destinationClassName = "";
+							
+							//condition to check for "Collection<B> b" type field variables and extracting the collection object "B" from it and setting in destination node
+							if(((ClassOrInterfaceType)((ReferenceType)destinationFieldDEclaration).getType()).getTypeArgs()!=null)
+							{
+								
+								destinationClassName = new String(((ClassOrInterfaceType)((ReferenceType)destinationFieldDEclaration).getType()).getTypeArgs().get(0).toString());
+							}
+							//getTypeArgs() will be null in case of "private C c" type field variables, so else will be executed
+							
+							else
+							{
+								destinationClassName = destinationClassFullDesc;
+							}
+							
 							String sourceNodeName = typeDeclarationElement.getName();
 							boolean isNodeExist = false;
 							for(NodesConnection node : figureWithoutDependency.getConnectedLineswithNodes())
 							{
-								if((sourceNodeName.equals(((ClassGeneration)node.getSourceNode()).getClassName()) || sourceNodeName.equals(((ClassGeneration)node.getDestinationNode()).getClassName())) &&
-										destinationClassName.equals(((ClassGeneration)node.getSourceNode()).getClassName()) || destinationClassName.equals(((ClassGeneration)node.getDestinationNode()).getClassName()))
+								boolean sourceExists = sourceNodeName.equals(((ClassGeneration)node.getSourceNode()).getClassName()) || sourceNodeName.equals(((ClassGeneration)node.getDestinationNode()).getClassName());
+								boolean destinationExists = destinationClassName.equals(((ClassGeneration)node.getSourceNode()).getClassName()) || destinationClassName.equals(((ClassGeneration)node.getDestinationNode()).getClassName());
+								
+								if(sourceExists && destinationExists)
 								{
 									isNodeExist = true;
 								}
+								
+								
+								/**
+								 * if(node.getConnectingLine().equals(ConnectingLines.getDependency()))
+											{
+												isNodeExist = true;
+											}
+								 * 
+								 * 
+								 */
 							}
 							if(isNodeExist)
 							{
@@ -97,6 +128,27 @@ public class DependencyDrawer {
 									String sourceNodeName = typeDeclarationElement.getName();
 									ClassGeneration sourceNode = figureWithoutDependency.getClassGeneration(sourceNodeName);
 									String destinationNodeName = currentMethodParameter.getType().toString();
+									
+									boolean isNodeExist = false;
+									for(NodesConnection node : figureWithoutDependency.getConnectedLineswithNodes())
+									{
+										boolean sourceExists = sourceNodeName.equals(((ClassGeneration)node.getSourceNode()).getClassName()) || sourceNodeName.equals(((ClassGeneration)node.getDestinationNode()).getClassName());
+										boolean destinationExists = destinationNodeName.equals(((ClassGeneration)node.getSourceNode()).getClassName()) || destinationNodeName.equals(((ClassGeneration)node.getDestinationNode()).getClassName());
+										
+										if(sourceExists && destinationExists)
+										{
+											if(node.getConnectingLine().equals(ConnectingLines.getDependency()))
+											{
+												isNodeExist = true;
+											}
+											
+										}
+									}
+									if(isNodeExist)
+									{
+										break;
+									}
+									
 									ClassGeneration destinationNode = new ClassGeneration(destinationNodeName);
 									
 									if(Main.getReferenceTypeFlag(currentMethodParameter.getType()))
@@ -111,11 +163,6 @@ public class DependencyDrawer {
 								}
 							}
 						}
-						
-						
-						
-						
-						
 					}
 				}
 			}
