@@ -54,6 +54,33 @@ public class UMLClassMethodsBuilder {
 				}
 				
 			}
+			//Code for checking the main method and generating its uml input string
+			if(Modifier.toString(currentMethod.getModifiers()).equals("public static"))
+			{
+				if(currentMethod.getName().equals("main"))
+				{
+					List<Parameter> parameterList = currentMethod.getParameters();
+					if(parameterList !=null)
+					{
+
+						for(Parameter eachParameter : parameterList)
+						{
+							umlVariables = umlVariables + "+" + currentMethod.getName() + "(" + ((VariableDeclaratorId)eachParameter.getId()).getName() + " : " + eachParameter.getType() + ")" + ":" + currentMethod.getType().toString() + "\n";                       
+						}
+					}
+				}
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 		}
 		
 		return umlVariables;
