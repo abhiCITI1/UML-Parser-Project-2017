@@ -39,7 +39,7 @@ public class UMLStringOutput {
 		//Fetching the generated class list from the Plant UML Figure
 		List<ClassGeneration> generatedClassList =  plantUMLFigure.getGeneratedClass();
 		boolean fieldAvailable = false;
-		List<MethodDeclaration> getterSetterMethodList =  new ArrayList<MethodDeclaration>();
+		//List<MethodDeclaration> getterSetterMethodList =  new ArrayList<MethodDeclaration>();
 		
 		
 		/** 
@@ -59,7 +59,7 @@ public class UMLStringOutput {
 		}
 		
 		
-		finalPlantUMLTemplate = "@startuml\n" + umlVariables + "\n@enduml";
+		finalPlantUMLTemplate = "@startuml\nskinparam classAttributeIconSize 0\n" + umlVariables + "\n@enduml";
 		
 		SourceStringReader sourceReader = new SourceStringReader(finalPlantUMLTemplate);
 		
