@@ -28,11 +28,11 @@ public class UMLClassConnectionLineBuilder {
 			}
 			else if(currentNode.getConnectingLine().equals("EXTENDS"))
 			{
-				plantUMLBodyOfLines += currentNode.getDestinationNode().getClassName() + PlantUMLNotations.getExtends() + currentNode.getSourceNode().getClassName() + "\n";
+				plantUMLBodyOfLines += currentNode.getDestinationNode().getClassName() + " " + PlantUMLNotations.getExtends() + " " + currentNode.getSourceNode().getClassName() + "\n";
 			}
 			else if(currentNode.getConnectingLine().equals("IMPLEMENTS"))
 			{
-				plantUMLBodyOfLines += currentNode.getDestinationNode().getClassName() + PlantUMLNotations.getImplements() + currentNode.getSourceNode().getClassName() + "\n";
+				plantUMLBodyOfLines += currentNode.getDestinationNode().getClassName() + " " + PlantUMLNotations.getImplements() + " "+ currentNode.getSourceNode().getClassName() + "\n";
 			}
 		}
 		
