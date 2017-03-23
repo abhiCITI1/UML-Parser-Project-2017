@@ -77,18 +77,11 @@ public class DependencyDrawer {
 								
 								if(sourceExists && destinationExists)
 								{
-									isNodeExist = true;
+									if(node.getConnectingLine().equals(ConnectingLines.getAssociation()))
+									{
+										isNodeExist = true;
+									}
 								}
-								
-								
-								/**
-								 * if(node.getConnectingLine().equals(ConnectingLines.getDependency()))
-											{
-												isNodeExist = true;
-											}
-								 * 
-								 * 
-								 */
 							}
 							if(isNodeExist)
 							{
