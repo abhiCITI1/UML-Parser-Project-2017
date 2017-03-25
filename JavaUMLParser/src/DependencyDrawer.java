@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import japa.parser.ast.body.BodyDeclaration;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.body.ConstructorDeclaration;
 import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
@@ -156,7 +157,121 @@ public class DependencyDrawer {
 								}
 							}
 						}
+						String methodName = ((MethodDeclaration)currentBodyDeclaration).getName();
+						String methodBody = ((MethodDeclaration)currentBodyDeclaration).getBody().toString();
+						if(methodName.equals("main") && !methodBody.isEmpty())
+						{
+							for(ClassGeneration eachClass : figureWithoutDependency.getGeneratedClass())
+							{
+								if(methodBody.contains(eachClass.getClassName()))
+								{
+									if(eachClass.isInterfaceFlag())
+									{
+										NodesConnection nodesConnection = new NodesConnection();
+										String sourceNodeName = typeDeclarationElement.getName();
+										ClassGeneration sourceNode = figureWithoutDependency.getClassGeneration(sourceNodeName);
+										String destinationNodeName = eachClass.getClassName();
+										
+										boolean isNodeExist = false;
+										for(NodesConnection node : figureWithoutDependency.getConnectedLineswithNodes())
+										{
+											boolean sourceExists = sourceNodeName.equals(((ClassGeneration)node.getSourceNode()).getClassName()) || sourceNodeName.equals(((ClassGeneration)node.getDestinationNode()).getClassName());
+											boolean destinationExists = destinationNodeName.equals(((ClassGeneration)node.getSourceNode()).getClassName()) || destinationNodeName.equals(((ClassGeneration)node.getDestinationNode()).getClassName());
+											
+											if(sourceExists && destinationExists)
+											{
+												if(node.getConnectingLine().equals(ConnectingLines.getDependency()))
+												{
+													isNodeExist = true;
+												}
+												
+											}
+										}
+										if(isNodeExist)
+										{
+											break;
+										}
+										
+										ClassGeneration destinationNode = new ClassGeneration(destinationNodeName);
+										
+										nodesConnection.setConnectingLine(ConnectingLines.getDependency());
+										
+										
+										nodesConnection.setSourceNode(sourceNode);
+										nodesConnection.setDestinationNode(destinationNode);
+										
+										figureWithoutDependency.getConnectedLineswithNodes().add(nodesConnection);
+									}
+								}
+							}
+							
+						}
 					}
+					
+					if(currentBodyDeclaration instanceof ConstructorDeclaration)
+					{
+						List<Parameter> constructorParamList = ((ConstructorDeclaration)currentBodyDeclaration).getParameters();
+						boolean isConstructParamObjectInterface = false;
+						if(constructorParamList!=null)
+						{
+							for(Parameter constructorParam : constructorParamList)
+							{
+								String constructParamObject = ((ReferenceType)constructorParam.getType()).toString();
+								
+								for(ClassGeneration eachClass : figureWithoutDependency.getGeneratedClass())
+								{
+									if(constructParamObject.equals(eachClass.getClassName()))
+									{
+										isConstructParamObjectInterface = eachClass.isInterfaceFlag();
+										break;
+									}
+									
+								}
+								
+								
+								if(isConstructParamObjectInterface)
+								{
+									NodesConnection nodesConnection = new NodesConnection();
+									String sourceNodeName = typeDeclarationElement.getName();
+									ClassGeneration sourceNode = figureWithoutDependency.getClassGeneration(sourceNodeName);
+									String destinationNodeName = constructParamObject;
+									
+									boolean isNodeExist = false;
+									for(NodesConnection node : figureWithoutDependency.getConnectedLineswithNodes())
+									{
+										boolean sourceExists = sourceNodeName.equals(((ClassGeneration)node.getSourceNode()).getClassName()) || sourceNodeName.equals(((ClassGeneration)node.getDestinationNode()).getClassName());
+										boolean destinationExists = destinationNodeName.equals(((ClassGeneration)node.getSourceNode()).getClassName()) || destinationNodeName.equals(((ClassGeneration)node.getDestinationNode()).getClassName());
+										
+										if(sourceExists && destinationExists)
+										{
+											if(node.getConnectingLine().equals(ConnectingLines.getDependency()))
+											{
+												isNodeExist = true;
+											}
+											
+										}
+									}
+									if(isNodeExist)
+									{
+										break;
+									}
+									
+									ClassGeneration destinationNode = new ClassGeneration(destinationNodeName);
+									
+									nodesConnection.setConnectingLine(ConnectingLines.getDependency());
+									
+									
+									nodesConnection.setSourceNode(sourceNode);
+									nodesConnection.setDestinationNode(destinationNode);
+									
+									figureWithoutDependency.getConnectedLineswithNodes().add(nodesConnection);
+								}
+								
+								
+							}
+						}
+					}
+					
 				}
 			}
 			
