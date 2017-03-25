@@ -15,7 +15,7 @@ public class UMLClassConnectionLineBuilder {
 			{
 				if(currentNode.getMultiplicityLevel()!=null)
 				{
-					plantUMLBodyOfLines += currentNode.getDestinationNode().getClassName() + " \"" + currentNode.getMultiplicityLevel() + "\"" + " .. "+ "\"1\" "+ currentNode.getSourceNode().getClassName() +"\n"; 
+					plantUMLBodyOfLines += currentNode.getDestinationNode().getClassName() + " \"" + currentNode.getMultiplicityLevel() + "\"" + " -- "+ "\"1\" "+ currentNode.getSourceNode().getClassName() +"\n"; 
 				}
 				else
 				{
