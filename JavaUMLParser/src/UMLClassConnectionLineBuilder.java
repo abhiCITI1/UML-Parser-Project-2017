@@ -15,11 +15,11 @@ public class UMLClassConnectionLineBuilder {
 			{
 				if(currentNode.getMultiplicityLevel()!=null)
 				{
-					plantUMLBodyOfLines += currentNode.getDestinationNode().getClassName() + " \"" + currentNode.getMultiplicityLevel() + "\"" + " -- "+ "\"1\" "+ currentNode.getSourceNode().getClassName() +"\n"; 
+					plantUMLBodyOfLines += currentNode.getDestinationNode().getClassName() + " \"" + currentNode.getMultiplicityLevel() + "\"" + " "+PlantUMLNotations.getAssociation()+" "+ "\"1\" "+ currentNode.getSourceNode().getClassName() +"\n"; 
 				}
 				else
 				{
-					plantUMLBodyOfLines += currentNode.getDestinationNode().getClassName() + " -- " + currentNode.getSourceNode().getClassName() + "\n";
+					plantUMLBodyOfLines += currentNode.getDestinationNode().getClassName() + " "+PlantUMLNotations.getAssociation()+" " + currentNode.getSourceNode().getClassName() + "\n";
 				}
 			}
 			else if(currentNode.getConnectingLine().equals("DEPENDENCY"))
