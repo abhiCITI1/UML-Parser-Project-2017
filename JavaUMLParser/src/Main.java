@@ -59,8 +59,6 @@ public class Main {
 
 		List<ClassGeneration> classOrInterfaceList = new ArrayList<ClassGeneration>();
 
-		//List<ClassOrInterfaceType> classOrInterfaceTypes = new ArrayList<ClassOrInterfaceType>();
-
 		List<TypeDeclaration> listOfTypes = new ArrayList<TypeDeclaration>();
 
 		PlantUMLFigure plantUMLFigure = new PlantUMLFigure();
@@ -134,42 +132,7 @@ public class Main {
 
 		}
 		plantUMLFigure.setGeneratedClass(classOrInterfaceList);
-		/*
-		 * This block of code fetches the type definition(Class/Interface) of the template
-		 * and provide the dependency decision based on whether 'EXTENDS' or 'IMPLEMENTS'
-		 * 
-		 * */
-		for(File eachFile : sourceFiles)
-		{
-			//File individualJavafile = fileItr.next();
-			compilationUnit = JavaParser.parse(eachFile);
-
-
-			listOfTypes = compilationUnit.getTypes();
-
-			Iterator<TypeDeclaration> typeItr = listOfTypes.iterator();
-			while(typeItr.hasNext())
-			{
-				TypeDeclaration typeDeclarationElement = typeItr.next();
-				List<ClassOrInterfaceType> implementsList = ((ClassOrInterfaceDeclaration)typeDeclarationElement).getImplements();
-
-				if(implementsList!=null)
-				{
-					for(ClassOrInterfaceType currentImplementingClass : implementsList)
-					{
-						String source = typeDeclarationElement.getName();
-						ClassGeneration sourceNode = plantUMLFigure.getClassGeneration(source);
-						String destination = currentImplementingClass.getName();
-						ClassGeneration destinationNode = new ClassGeneration(destination);
-
-						NodesConnection nodeConnection = new NodesConnection();
-						nodeConnection.setSourceNode(sourceNode);
-						nodeConnection.setDestinationNode(destinationNode);
-						nodeConnection.setConnectingLine(ConnectingLines.getImplements());
-						plantUMLFigure.getConnectedLineswithNodes().add(nodeConnection);
-					}
-				}
-
+		
 				List<ClassOrInterfaceType> extendsList = ((ClassOrInterfaceDeclaration)typeDeclarationElement).getExtends();
 				if(extendsList!=null)
 				{
@@ -187,7 +150,6 @@ public class Main {
 						plantUMLFigure.getConnectedLineswithNodes().add(nodeConnection);
 					}	
 				}
-
 			}
 
 		} 
