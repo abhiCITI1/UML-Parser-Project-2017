@@ -16,7 +16,6 @@ public class ClassGeneration {
 	private List<FieldDeclaration> fieldNames;
 	private List<ConstructorDeclaration> constuctorNames;
 	private String parameterName;
-	private List<String> nonPrimitiveFields;
 	private boolean interfaceFlag;
 	
 	public ClassGeneration(String name) {
@@ -39,18 +38,6 @@ public class ClassGeneration {
 	 */
 	public void setInterfaceFlag(boolean interfaceFlag) {
 		this.interfaceFlag = interfaceFlag;
-	}
-	/**
-	 * @return the nonPrimitiveFields
-	 */
-	public List<String> getNonPrimitiveFields() {
-		return nonPrimitiveFields;
-	}
-	/**
-	 * @param nonPrimitiveFields the nonPrimitiveFields to set
-	 */
-	public void setNonPrimitiveFields(List<String> nonPrimitiveFields) {
-		this.nonPrimitiveFields = nonPrimitiveFields;
 	}
 	/**
 	 * @return the className
