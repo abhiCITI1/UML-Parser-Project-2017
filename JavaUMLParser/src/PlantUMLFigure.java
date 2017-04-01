@@ -47,15 +47,5 @@ public class PlantUMLFigure {
 	}
 	
 	
-	public ClassGeneration getClassGeneration(String s)
-	{
-		for (ClassGeneration currentclass : generatedClass) 
-		{
-			if(currentclass.getClassName().equals(s))
-			{
-				return currentclass;
-			}
-		}
-		return null;
-	}
+	
 }
