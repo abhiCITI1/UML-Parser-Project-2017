@@ -15,18 +15,7 @@ public class PlantUMLNotations {
 		return DEPENDENCY;
 	}
 
-	/**
-	 * @return the one to many multiplicity
-	 */
-	public static String getOnetomanymultiplicity() {
-		return ONETOMANYMULTIPLICITY;
-	}
-	/**
-	 * @return the many to many multiplicity
-	 */
-	public static String getManytomanymultiplicity() {
-		return MANYTOMANYMULTIPLICITY;
-	}
+
 	/**
 	 * @return the association
 	 */
@@ -47,7 +36,6 @@ public class PlantUMLNotations {
 	}
 
 	private static final String ONETOMANYMULTIPLICITY = "*";
-	private static final String MANYTOMANYMULTIPLICITY = "*--";
 	private static final String ASSOCIATION = "--";
 	private static final String DEPENDENCY = "<..";
 	private static final String EXTENDS = "<|--";
