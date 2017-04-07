@@ -30,7 +30,7 @@ public class UMLClassMethodsBuilder {
 
 						for(Parameter eachParameter : parameterList)
 						{
-							umlVariables = umlVariables + "+" + currentMethod.getName() + "(" + ((VariableDeclaratorId)eachParameter.getId()).getName() + " : " + eachParameter.getType() + ")\n";
+							umlVariables = umlVariables + "+" + currentMethod.getName() + "(" + ((VariableDeclaratorId)eachParameter.getId()).getName() + " : " + eachParameter.getType() + ")" + ":" + currentMethod.getType().toString() + "\n";
 						}
 					}
 					else
