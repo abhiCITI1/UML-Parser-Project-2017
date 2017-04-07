@@ -20,7 +20,7 @@ public class UMLClassAttributesBuilder {
 			{
 				if(currentField.getType() instanceof ReferenceType && !currentField.getType().toString().equals("String"))
 				{
-					umlVariables = umlVariables + "-" + currentField.getVariables().get(0) + " : " + ((ReferenceType)currentField.getType()).getType() + "(*)\n";
+					umlVariables = umlVariables + "-" + currentField.getVariables().get(0) + " : " + ((ReferenceType)currentField.getType()).getType() + "[*]\n";
 				}
 				else if(currentField.getType() instanceof ReferenceType && currentField.getType().toString().equals("String"))
 				{
@@ -40,7 +40,4 @@ public class UMLClassAttributesBuilder {
 		
 		return umlVariables;
 	}
-	
-	
-	
 }
