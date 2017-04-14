@@ -1,22 +1,19 @@
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.OutputStream;
 import java.util.List;
 
-import japa.parser.ast.body.ConstructorDeclaration;
-import japa.parser.ast.body.FieldDeclaration;
-import japa.parser.ast.body.MethodDeclaration;
-import japa.parser.ast.body.Parameter;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.SourceStringReader;
 
-
+import java.nio.file.Paths;
+import java.nio.file.Path;
 /**
  * @author Abhishek
  */
-public class UMLStringOutput {
+public class PlantUMLImageGenerator {
 
 
 	UMLClassAttributesBuilder umlClassAttributesBuilder = new UMLClassAttributesBuilder();
@@ -32,7 +29,7 @@ public class UMLStringOutput {
 	 * @throws IOException 
 	 * @throws ClassNotFoundException 
 	 */
-	public void generatePlantUMLTemplateFile(PlantUMLFigure plantUMLFigure, String sourceFolderName, String outputImageFileName ) throws IOException, ClassNotFoundException
+	public void generatePlantUMLTemplateFile(PlantUMLFigureTemplate plantUMLFigure, String sourceFolderName, String outputImageFileName ) throws IOException, ClassNotFoundException
 	{
 		String umlVariables = "";
 		List<ClassGeneration> generatedClassList =  plantUMLFigure.getGeneratedClass();
@@ -73,4 +70,31 @@ public class UMLStringOutput {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	public void generatePlantUMLSequenceDiagram(String sequenceDiagramInputString, String outputImagePath) throws IOException
+	{
+		
+		String finalPlantUMLSeqTemplate = "@startuml\nskinparam classAttributeIconSize 0\n" + sequenceDiagramInputString + "\n@enduml";
+
+		SourceStringReader sourceReader = new SourceStringReader(finalPlantUMLSeqTemplate);
+
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(outputImagePath);
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		try 
+		{
+			sourceReader.generateImage(fos, new FileFormatOption(FileFormat.PNG , false));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	
+	
 }
