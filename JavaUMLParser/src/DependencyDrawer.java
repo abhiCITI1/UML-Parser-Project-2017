@@ -1,4 +1,3 @@
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -13,7 +12,6 @@ import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.type.ClassOrInterfaceType;
-import japa.parser.ast.type.PrimitiveType;
 import japa.parser.ast.type.ReferenceType;
 import japa.parser.ast.type.Type;
 
@@ -26,11 +24,10 @@ import japa.parser.ast.type.Type;
  */
 public class DependencyDrawer {
 	
-	private PlantUMLFigure figureWithDependency = new PlantUMLFigure();
+	private PlantUMLFigureTemplate figureWithDependency = new PlantUMLFigureTemplate();
 	
-	public PlantUMLFigure drawDependeny(PlantUMLFigure figureWithoutDependency, HashMap<String, TypeDeclaration> compiledTypesMap)
+	public PlantUMLFigureTemplate drawDependeny(PlantUMLFigureTemplate figureWithoutDependency, HashMap<String, TypeDeclaration> compiledTypesMap)
 	{
-		
 		Iterator<Entry<String, TypeDeclaration>> typeDeclarationItr = compiledTypesMap.entrySet().iterator();
 		while(typeDeclarationItr.hasNext())
 		{
@@ -48,7 +45,7 @@ public class DependencyDrawer {
 				{
 					if(currentBodyDeclaration instanceof FieldDeclaration)
 					{
-						if(Main.getReferenceTypeFlag(((FieldDeclaration)currentBodyDeclaration).getType()))
+						if(JavaParserMain.getReferenceTypeFlag(((FieldDeclaration)currentBodyDeclaration).getType()))
 						{
 							String destinationClassFullDesc = new String(((FieldDeclaration)currentBodyDeclaration).getType().toString());
 							
@@ -115,7 +112,7 @@ public class DependencyDrawer {
 						{
 							for(Parameter currentMethodParameter : methodParameterList)
 							{
-								if(Main.getReferenceTypeFlag(currentMethodParameter.getType()))
+								if(JavaParserMain.getReferenceTypeFlag(currentMethodParameter.getType()))
 								{
 									System.out.println("Current method parameter" + currentMethodParameter.getType());
 									NodesConnection nodesConnection = new NodesConnection();
@@ -145,7 +142,7 @@ public class DependencyDrawer {
 									
 									ClassGeneration destinationNode = new ClassGeneration(destinationNodeName);
 									
-									if(Main.getReferenceTypeFlag(currentMethodParameter.getType()))
+									if(JavaParserMain.getReferenceTypeFlag(currentMethodParameter.getType()))
 									{
 										nodesConnection.setConnectingLine(ConnectingLines.getDependency());
 									}
@@ -281,5 +278,76 @@ public class DependencyDrawer {
 		figureWithDependency = figureWithoutDependency;
 		return figureWithDependency;
 	}
+	
+	
+	public PlantUMLFigureTemplate getExtendsImplementsConnection(PlantUMLFigureTemplate plantUMLFigure,List<TypeDeclaration> listOfTypes)
+	{
+		Iterator<TypeDeclaration> typeItr = listOfTypes.iterator();
+		while(typeItr.hasNext())
+		{
+			TypeDeclaration typeDeclarationElement = typeItr.next();
+			List<ClassOrInterfaceType> implementsList = ((ClassOrInterfaceDeclaration)typeDeclarationElement).getImplements();
+
+			if(implementsList!=null)
+			{
+				for(ClassOrInterfaceType currentImplementingClass : implementsList)
+				{
+					String source = typeDeclarationElement.getName();
+					ClassGeneration sourceNode = null;
+					if(plantUMLFigure.getGeneratedClass().isEmpty())
+					{
+						sourceNode = new ClassGeneration(source);
+					}
+					else
+					{
+						sourceNode = plantUMLFigure.getClassGeneration(source);
+					}
+					String destination = currentImplementingClass.getName();
+					ClassGeneration destinationNode = new ClassGeneration(destination);
+
+					NodesConnection nodeConnection = new NodesConnection();
+					nodeConnection.setSourceNode(sourceNode);
+					nodeConnection.setDestinationNode(destinationNode);
+					nodeConnection.setConnectingLine(ConnectingLines.getImplements());
+					plantUMLFigure.getConnectedLineswithNodes().add(nodeConnection);
+				}
+			}
+
+			List<ClassOrInterfaceType> extendsList = ((ClassOrInterfaceDeclaration)typeDeclarationElement).getExtends();
+			if(extendsList!=null)
+			{
+				for(ClassOrInterfaceType currentExtendingClass : extendsList)
+				{
+					String source = typeDeclarationElement.getName();
+					ClassGeneration sourceNode = null;
+					if(plantUMLFigure.getGeneratedClass().isEmpty())
+					{
+						sourceNode = new ClassGeneration(source);
+					}
+					else
+					{
+						sourceNode = plantUMLFigure.getClassGeneration(source);
+					}
+					String destination = currentExtendingClass.getName();
+					ClassGeneration destinationNode = new ClassGeneration(destination);
+
+					NodesConnection nodeConnection = new NodesConnection();
+					nodeConnection.setSourceNode(sourceNode);
+					nodeConnection.setDestinationNode(destinationNode);
+					nodeConnection.setConnectingLine(ConnectingLines.getExtends());
+					plantUMLFigure.getConnectedLineswithNodes().add(nodeConnection);
+				}	
+			}
+		}
+		
+		return plantUMLFigure;
+		
+	}
+	
+	
+	
+	
+	
+	
 
 }
