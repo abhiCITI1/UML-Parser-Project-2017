@@ -20,7 +20,7 @@ public aspect Main1 {
 
 	pointcut allConstructorCalls() : !within(MessageStack) && !within(Main1) && !within(Main) && execution(*.new(..));	
 	
-	public static class AspectState {
+	public static class SequenceAspect {
 		private int callDepth = 0 ;
 		private int depth = 0;
 		private Stack<String> classNameStack = new Stack<String>();
@@ -60,22 +60,20 @@ public aspect Main1 {
 				String classToDeactivate = classNameStack.peek();
 				String deactivateParticipantString =  "deactivate " + classToDeactivate + "\n";
 				finalPlantUMLSeqString += deactivateParticipantString;
-				updateStackValue();
+				reviseStackContent();
 				if(msgSeqNumCurrent!=1 && messageStack.isEmpty())
 				{
-					printSequenceDiagram();
+					generateSequenceString();
 				}
 			}
 		}
 
-		private void printSequenceDiagram() {
+		private void generateSequenceString() {
 			if(callDepth == 0 && classNameStack.isEmpty()) {
 				String completeString = finalPlantUMLSeqString + deactivateMain;
 				
 				String replacedFinalString = getParsedString(completeString);
 
-				//String imagePath = "/Users/Abhishek/ParserUMLDiagramsImages/SeqImage";
-				
 				File file = new File((Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
 				boolean b =false;
 				
@@ -88,8 +86,6 @@ public aspect Main1 {
 					{
 						b = file.mkdirs();
 					}
-		        	
-		        	//String imagePathWindows = file.getAbsolutePath() + "/image";
 		        }
 		        
 		        if (OS.indexOf("mac") >= 0) {
@@ -123,9 +119,6 @@ public aspect Main1 {
 			String finalPlantUMLSeqTemplate = "@startuml\nskinparam classAttributeIconSize 0\n" + finalStr + "\n@enduml";
 
 			SourceStringReader sourceReader = new SourceStringReader(finalPlantUMLSeqTemplate);
-			
-			
-
 			FileOutputStream fos = null;
 			try {
 				fos = new FileOutputStream(imagePath);
@@ -185,7 +178,7 @@ public aspect Main1 {
 			}
 		}
 
-		private void updateStackValue() {
+		private void reviseStackContent() {
 			callDepth--;
 			if(!classNameStack.isEmpty()) {
 				classNameStack.pop();
@@ -226,21 +219,21 @@ public aspect Main1 {
 	 }
 
 	
-	AspectState aspectState = new AspectState();
+	SequenceAspect sequenceAspect = new SequenceAspect();
 
 	before() : allConstructorCalls() {
-		aspectState.incrementConstructorCall();
+		sequenceAspect.incrementConstructorCall();
 	}
 	
 	after() :  allConstructorCalls() {
-		aspectState.decrementConstructorCall();
+		sequenceAspect.decrementConstructorCall();
 	}
 	
 	before(Object o)  : allexecution(o) { 
-		aspectState.pushStackValue(thisJoinPoint.toString());
+		sequenceAspect.pushStackValue(thisJoinPoint.toString());
 	}
 	
 	after(Object o) : allexecution(o){
-		aspectState.popStackValue();
+		sequenceAspect.popStackValue();
 	}
 }
